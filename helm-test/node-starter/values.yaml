@@ -1,0 +1,19 @@
+image:
+  registry: devdocker.mulesoft.com:18078
+  org: mulesoft
+  name: node-starter
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: NodePort
+
+resources:
+  requests:
+    cpu: 1
+    memory: 512m
+
+# Allow newrelic infra to run on Kubernetes 1.6+ masters.
+tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master

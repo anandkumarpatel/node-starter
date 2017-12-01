@@ -1,0 +1,47 @@
+{{- $serviceName := include "fullname" . -}}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ $serviceName }}
+  labels:
+{{ include "labels.standard" . | indent 4 }}
+spec:
+  replicas: {{.Values.replicaCount | default 1}}
+  template:
+    metadata:
+      labels:
+        app: {{ $serviceName }}
+    spec:
+{{- if or (.Values.image.pullSecret) (.Values.image.pullSecretName) }}
+    imagePullSecrets:
+    - name: {{ template "image-pull-secret-name" . }}
+{{- end }}
+      {{- if ge .Capabilities.KubeVersion.Minor "6" }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ template "image-name" . }}"
+        imagePullPolicy: {{.Values.image.pullPolicy}}
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+        ports:
+        - name: port-3000
+          containerPort: 3000
+        command:
+        - npm
+        args:
+        - start
+        env:
+        - name: "one"
+          value: "ok"
+        - name: "two"
+          value: "2798478950"
+        volumeMounts:
+        - mountPath: /tmp/log
+          name: tmplog
+      volumes:
+      - name: tmplog
+        emptyDir: { }
+    
