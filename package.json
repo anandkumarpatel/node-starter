@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "prestart": "npm run migrate",
-    "start": "node index.js",
+    "start": "npm install && node index.js",
     "migrate": "echo 'No migrations to run.'"
   },
   "author": "Runnable, Inc.",
